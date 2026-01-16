@@ -1,3 +1,18 @@
+"""
+trajectory_controller.py
+
+ROS 2 node responsible for tracking a time-parameterized trajectory.
+
+Control strategy:
+1. Navigate to the starting point of the trajectory
+2. Track trajectory based on time synchronization
+3. Converge to final point once trajectory time ends
+
+Controller type:
+- Heading-based proportional controller
+- Constant forward velocity
+"""
+
 import rclpy
 from rclpy.node import Node
 from geometry_msgs.msg import Twist
@@ -6,11 +21,35 @@ from math import atan2, hypot, pi
 from nav_assignment.trajectory_generator import generate_trajectory
 
 def normalize(a):
+    """
+    Normalize angle to range [-pi, pi].
+
+    Parameters
+    ----------
+    angle : float
+        Angle in radians
+
+    Returns
+    -------
+    float
+        Normalized angle
+    """
+     
     while a > pi: a -= 2*pi
     while a < -pi: a += 2*pi
     return a
 
 class TrajectoryController(Node):
+    """
+    ROS 2 node that controls the robot to follow a trajectory.
+
+    Subscriptions:
+    - /odom (nav_msgs/Odometry)
+
+    Publications:
+    - /cmd_vel (geometry_msgs/Twist)
+    """
+
     def __init__(self):
         super().__init__('trajectory_controller')
 
@@ -33,9 +72,18 @@ class TrajectoryController(Node):
         self.yaw = atan2(siny, cosy)
 
     def control_loop(self):
+        """
+        Main control loop executed periodically.
+
+        Implements:
+        - Go-to-start behavior
+        - Time-based trajectory tracking
+        - Final convergence
+        """
+
         cmd = Twist()
 
-        # ----- Phase 1: Go to start -----
+        # ----- Phase 1: Navigate to trajectory starting point -----
         if self.phase == 'GO_TO_START':
             tx, ty, _ = self.trajectory[0]
             dx, dy = tx - self.x, ty - self.y
@@ -52,7 +100,7 @@ class TrajectoryController(Node):
             self.cmd_pub.publish(cmd)
             return
 
-        # ----- Phase 2: Time-based tracking -----
+        # ----- Phase 2: Time-based trajectory tracking -----
         now = self.get_clock().now().nanoseconds * 1e-9
         t = now - self.start_time
 
@@ -79,7 +127,8 @@ class TrajectoryController(Node):
                 cmd.angular.z = 1.5 * normalize(atan2(dy, dx) - self.yaw)
                 self.cmd_pub.publish(cmd)
                 return
-
+            
+        # Normal tracking
         tx, ty, _ = target
         dx, dy = tx - self.x, ty - self.y
 
