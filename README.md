@@ -29,39 +29,67 @@ The implementation is modular, simulation-ready, and structured to be extensible
 
 ## Workspace Setup
 
+```bash
+
 mkdir -p ~/nav_assessment_ws/src
 cd ~/nav_assessment_ws/src
 
+```
+
 ## Clone the repository
+
+```bash
 
 git clone https://github.com/adarsha-s-bharadwaj/Path-Smoothing-and-Trajectory-Control-in-2D-Space-using-Turtlebot3-Gazebo-and-ROS2-Humble.git
 
+```
+
 ## Build Instructions
+
+```bash
 
 cd ~/nav_assessment_ws
 colcon build --symlink-install
 source install/setup.bash
 
+```
+
 ## Running the Simulation
 
-'''Launch TurtleBot3 Gazebo world
+Launch TurtleBot3 Gazebo world
+
+```bash
 
 export TURTLEBOT3_MODEL=waffle
-ros2 launch turtlebot3_gazebo empty_world.launch.py 
+ros2 launch turtlebot3_gazebo empty_world.launch.py
+
+```
 
 ## Running the Rviz with robot model for visualization
 
+```bash
+
 ros2 launch turtlebot3_bringup rviz2.launch.py
+
+```
 
 ## Running the Navigation Stack
 
 1. Trajectory Visualization
 
+```bash
+
 ros2 run nav_assignment visualizer
+
+```
 
 2. Trajectory Controller
 
+```bash
+
 ros2 run nav_assignment controller
+
+```
 
 ## Waypoints Configuration
 
