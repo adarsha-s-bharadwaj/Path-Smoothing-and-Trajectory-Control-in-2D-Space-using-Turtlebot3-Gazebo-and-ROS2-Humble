@@ -29,7 +29,6 @@ The implementation is modular, simulation-ready, and structured to be extensible
 
 ## Workspace Setup
 
-bash
 mkdir -p ~/nav_assessment_ws/src
 cd ~/nav_assessment_ws/src
 
